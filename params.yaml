@@ -1,0 +1,89 @@
+experiment:
+  EXPERIMENT_NAME: 'experiment_3'  # Name of the experiment
+  TRACKING_URI : "https://dagshub.com/sarthakg004/convolve.mlflow"
+##################################################################################################################################################
+data_cleaning:
+  DEV_DATA_PATH : 'data/raw/Dev_data_to_be_shared.csv'  # Path to the raw data
+  VAL_DATA_PATH : 'data/raw/validation_data_to_be_shared.csv'  # Path to the raw validation data
+
+  ENCODING_TECHNIQUE : 'target'  # Encoding technique to be used for categorical features  'target' or 'ordinal'
+  
+  NULL_PERCENTAGE : 0.25   # features with more than given missing values will be dropped
+  VARIANCE_THRESHOLD : 0   # features with less variance than given threshold will be dropped
+  IMPUTATION_TECHNIQUE : 'mode'  # Impuation technique to be used for missing values
+  KNN_IMPUTER_N_NEIGHBORS : 5    # Number of neighbors to be used for KNN imputation
+  TEST_SIZE : 0.2     # Test size for train-test split
+  RANDOM_STATE : 42
+##################################################################################################################################################
+feature_engineering:
+
+  INTERIM_TRAIN_DATA_PATH : 'data/interim/train.csv'  # Path to the interim train data
+  INTERIM_TEST_DATA_PATH : 'data/interim/test.csv'  # Path to the interim test data
+  INTERIM_VAL_DATA_PATH : 'data/interim/validation.csv'  # Path to the interim validation data
+
+
+  FEATURE_IMPORTANCE_TECHNIQUE : 'anova'  # Feature importance technique to be used 'combine' or 'fisher' or 'rf' or 'xgb' 
+  NO_FEATURES : 40
+
+  FEATURE_SELECTION_TECHNIQUE : 'skip'  # Feature selection technique to be used    'anova' or 'backward' or 'autoencoder' or'skip'
+  ANOVA_K : 40  # Number of features to be selected using ANOVA
+
+  # If selection technique is Sequential Backward Selection than hyperparameters of RF model
+  SFS_FORWARD : False  # IF False than SFS will be used as SBS
+  N_ESTIMATORS : 200
+  MAX_DEPTH : 10
+  MIN_SAMPLES_SPLIT : 5
+  MIN_SAMPLES_LEAF : 2
+  MAX_FEATURES : 'sqrt'
+  RANDOM_STATE : 42
+
+############################################################################################################################################################
+
+model_training:
+
+  PROCESSED_TRAIN_DATA : 'data/processed/train.csv'  # Path to the processed train data
+  PROCESSED_TEST_DATA : 'data/processed/test.csv'  # Path to the processed test data
+  PROCESSED_VAL_DATA : 'data/processed/val.csv'  # Path to the processed validation data
+
+  MODEL : 'mlp' 
+
+  # Hyperparameters Space of XGB model
+  MAX_DEPTH : [3,15]
+  OBJECTIVE: 'binary:logistic'
+  EVAL_METRIC: 'logloss'
+  ETA  : [0.005, 0.3]
+  SUB_SAMPLE : [0.5, 1.0]
+  COL_SAMPLE_BY_TREE : [0.5, 1.0]
+  MIN_CHILD_WEIGHT: [1, 20]
+  GAMMA_XGB :  [0, 5] # Gamma range
+  LAMBDA : [0, 10]  # L2 regularization range
+  ALPHA : [0, 10] # L1 regularization range
+  SCALE_POS_WEIGHT : [1, 10]   # Class imbalance correction
+  N_ESTIMATORS: [50, 500]  # Number of boosting rounds
+  TREE_METHOD: 'hist'
+  DEVICE: 'cuda'
+  SEED: 42
+
+  N_TRIALS : 10
+  TIMEOUT : 600
+
+  # Hyperparameters of MLP model
+  NO_LAYERS : 10
+  HIDDEN_DIMS : [1024,512,256,256,128,64,64,32,32,16]
+  DROPOUT_RATE : 0.3
+  LEARNING_RATE : 0.001
+  WEIGHT_DECAY : 0.00001
+  BATCH_SIZE : 128
+  N_EPOCHS : 100
+  PATIENCE : 10
+  VAL_THRESHOLD : 0.1
+  STEP_SIZE : 10
+  GAMMA : 0.1
+##################################################################################################################################
+prediction:
+  DATA : 'data/processed/val.csv'  # Path to the processed test data
+  MODEL : 'mlp'  # Model to be used for prediction
+  XGB_MODEL_PATH : 'models/xgboost_model.pkl'  # Path to the trained XGB model
+  MLP_MODEL_PATH : 'models/mlp_model.pth'  # Path to the trained MLP model
+  SUBMISSION_FILE_PATH : 'prediction.csv'  # Path to the submission file
+

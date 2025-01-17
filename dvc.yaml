@@ -1,0 +1,101 @@
+stages:
+  data_cleaning:
+    cmd: python src/data_preprocessing.py
+    deps:
+      - src/data_preprocessing.py
+      - data/raw/Dev_data_to_be_shared.csv
+      - data/raw/validation_data_to_be_shared.csv
+    params:
+      - experiment.EXPERIMENT_NAME
+      - data_cleaning.ENCODING_TECHNIQUE
+      - data_cleaning.DEV_DATA_PATH
+      - data_cleaning.VAL_DATA_PATH
+      - data_cleaning.NULL_PERCENTAGE
+      - data_cleaning.VARIANCE_THRESHOLD
+      - data_cleaning.IMPUTATION_TECHNIQUE
+      - data_cleaning.KNN_IMPUTER_N_NEIGHBORS
+      - data_cleaning.TEST_SIZE
+      - data_cleaning.RANDOM_STATE
+    outs:
+      - data/interim/train.csv
+      - data/interim/test.csv
+      - data/interim/validation.csv
+
+  feature_engineering:
+    cmd: python src/feature_engineering.py
+    deps:
+      - src/feature_engineering.py
+      - data/interim/train.csv
+      - data/interim/test.csv
+      - data/interim/validation.csv
+    params:
+      - experiment.EXPERIMENT_NAME
+      - feature_engineering.FEATURE_SELECTION_TECHNIQUE
+      - feature_engineering.ANOVA_K
+      - feature_engineering.SFS_FORWARD
+      - feature_engineering.N_ESTIMATORS
+      - feature_engineering.MAX_DEPTH
+      - feature_engineering.MIN_SAMPLES_SPLIT
+      - feature_engineering.MIN_SAMPLES_LEAF
+      - feature_engineering.MAX_FEATURES
+      - feature_engineering.RANDOM_STATE
+      - feature_engineering.NO_FEATURES
+      - feature_engineering.FEATURE_IMPORTANCE_TECHNIQUE
+    outs:
+      - data/processed/train.csv
+      - data/processed/test.csv
+      - data/processed/val.csv
+
+  model_training:
+    cmd: python src/Model_Building.py
+    deps:
+      - src/Model_Building.py
+      - data/processed/train.csv
+      - data/processed/test.csv
+      - data/processed/val.csv
+    params:
+      - experiment.EXPERIMENT_NAME
+      - model_training.MODEL
+      - model_training.MAX_DEPTH 
+      - model_training.OBJECTIVE
+      - model_training.EVAL_METRIC
+      - model_training.ETA  
+      - model_training.SUB_SAMPLE
+      - model_training.COL_SAMPLE_BY_TREE 
+      - model_training.MIN_CHILD_WEIGHT
+      - model_training.GAMMA_XGB 
+      - model_training.LAMBDA 
+      - model_training.ALPHA
+      - model_training.SCALE_POS_WEIGHT
+      - model_training.N_ESTIMATORS
+      - model_training.TREE_METHOD
+      - model_training.DEVICE
+      - model_training.SEED
+      - model_training.N_TRIALS
+      - model_training.TIMEOUT
+      - model_training.NO_LAYERS
+      - model_training.HIDDEN_DIMS
+      - model_training.DROPOUT_RATE
+      - model_training.LEARNING_RATE
+      - model_training.WEIGHT_DECAY
+      - model_training.BATCH_SIZE
+      - model_training.N_EPOCHS
+      - model_training.PATIENCE
+      - model_training.VAL_THRESHOLD 
+      - model_training.STEP_SIZE
+      - model_training.GAMMA
+
+  prediction:
+    cmd: python src/prediction.py
+    deps:
+      - src/prediction.py
+      - data/processed/val.csv
+    params:
+      - experiment.EXPERIMENT_NAME
+      - prediction.DATA
+      - prediction.MODEL
+      - prediction.SUBMISSION_FILE_PATH
+      - prediction.XGB_MODEL_PATH
+      - prediction.MLP_MODEL_PATH
+    outs:
+      - prediction.csv
